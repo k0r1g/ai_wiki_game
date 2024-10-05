@@ -621,11 +621,11 @@ video {
 .w-10 {
   width: 2.5rem;
 }
-.w-full {
-  width: 100%;
-}
 .w-40 {
   width: 10rem;
+}
+.w-full {
+  width: 100%;
 }
 .flex-none {
   flex: none;
@@ -817,10 +817,6 @@ video {
 .text-gray-500 {
   --tw-text-opacity: 1;
   color: rgb(107 114 128 / var(--tw-text-opacity));
-}
-.text-gray-700 {
-  --tw-text-opacity: 1;
-  color: rgb(55 65 81 / var(--tw-text-opacity));
 }
 .text-primary {
   color: hsl(var(--primary));

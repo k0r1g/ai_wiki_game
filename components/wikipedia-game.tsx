@@ -39,10 +39,15 @@ export function WikipediaGameComponent() {
   const [isTimerRunning, setIsTimerRunning] = useState(true)
   const [leftClickHistory, setLeftClickHistory] = useState<string[]>([])
   const [rightClickHistory, setRightClickHistory] = useState<string[]>([])
-  const [randomPageTitle1, setRandomPageTitle1] = useState('')
-  const [randomPageTitle2, setRandomPageTitle2] = useState('')
+  const [StartWikiPage, setStartWikiPage] = useState('')
+  const [TargetWikiPage, setTargetWikiPage] = useState('')
   const [aiThinking, setAiThinking] = useState(false)
   const [aiPath, setAiPath] = useState<string[]>([])
+
+
+  console.log('StartWikiPage', StartWikiPage)
+  console.log('TargetWikiPage', TargetWikiPage)
+
 
   const fetchRandomWikipediaPages = async () => {
     const today = new Date();
@@ -68,8 +73,8 @@ export function WikipediaGameComponent() {
       const randomTitle1 = popularPages[randomIndex1];
       const randomTitle2 = popularPages[randomIndex2];
 
-      setRandomPageTitle1(randomTitle1);
-      setRandomPageTitle2(randomTitle2);
+      setStartWikiPage(randomTitle1);
+      setTargetWikiPage(randomTitle2);
       setLeftTitle(randomTitle1);
       setRightTitle(randomTitle1);
     } catch (error) {
@@ -170,8 +175,8 @@ export function WikipediaGameComponent() {
   //       const title1 = 'Single-molecule experiment';
   //       const title2 = 'Fluorescence';
 
-  //       setRandomPageTitle1(title1);
-  //       setRandomPageTitle2(title2);
+  //       setStartWikiPage(title1);
+  //       setTargetWikiPage(title2);
 
   //       // Set initial pages for both players
   //       setLeftTitle(title1);
@@ -212,7 +217,7 @@ export function WikipediaGameComponent() {
       const links = await getLinks(leftTitle);
       const suggestion = await suggestLink({
         current_link: leftTitle,
-        target: randomPageTitle2,
+        target: TargetWikiPage,
         links: links
       });
 
@@ -234,7 +239,7 @@ export function WikipediaGameComponent() {
     } finally {
       setAiThinking(false);
     }
-  }, [leftTitle, randomPageTitle2, isGameOver, isTimerRunning, getLinks]);
+  }, [leftTitle, TargetWikiPage, isGameOver, isTimerRunning, getLinks]);
 
   useEffect(() => {
     if (!aiThinking && !isGameOver && isTimerRunning) {
@@ -252,7 +257,7 @@ export function WikipediaGameComponent() {
   }
 
   const checkWinner = (player: string, title: string) => {
-    if (!isGameOver && (title.toLowerCase() === 'philosophy' || title === randomPageTitle2)) {
+    if (!isGameOver && (title.toLowerCase() === 'philosophy' || title === TargetWikiPage)) {
       setWinner(player)
       setIsGameOver(true)
     }
@@ -285,22 +290,22 @@ export function WikipediaGameComponent() {
         <div className="flex items-center space-x-2">
           <span className="text-xl">🚦</span>
           <a
-            href={`https://en.wikipedia.org/wiki/${encodeURIComponent(randomPageTitle1)}`}
+            href={`https://en.wikipedia.org/wiki/${encodeURIComponent(StartWikiPage)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-xl font-semibold text-black hover:underline"
           >
-            {randomPageTitle1}
+            {StartWikiPage}
           </a>
           <ArrowRight className="text-black" size={24} />
           <span className="text-xl">🏁</span>
           <a
-            href={`https://en.wikipedia.org/wiki/${encodeURIComponent(randomPageTitle2)}`}
+            href={`https://en.wikipedia.org/wiki/${encodeURIComponent(TargetWikiPage)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-xl font-semibold text-black hover:underline"
           >
-            {randomPageTitle2}
+            {TargetWikiPage}
           </a>
         </div>
         <div className="flex items-center">
