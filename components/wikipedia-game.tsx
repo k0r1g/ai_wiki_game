@@ -39,6 +39,8 @@ export function WikipediaGameComponent() {
   const [rightClickHistory, setRightClickHistory] = useState<string[]>([])
   const [randomPageTitle1, setRandomPageTitle1] = useState('')
   const [randomPageTitle2, setRandomPageTitle2] = useState('')
+  const [aiThinking, setAiThinking] = useState(false)
+  const [aiPath, setAiPath] = useState<string[]>([])
 
   const fetchRandomWikipediaPages = async () => {
     const today = new Date();
@@ -73,12 +75,37 @@ export function WikipediaGameComponent() {
     }
   }
 
+  const getLinks = async (title) => {
+    var url = "https://en.wikipedia.org/w/api.php"; 
+    var params = {
+        action: "query",
+        format: "json",
+        titles: title,
+        prop: "links"
+    };
+    url = url + "?origin=*";
+    Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
+    console.log(url)
+    fetch(url)
+        .then(function(response){return response.json();})
+        .then(function(response) {
+            var pages = response.query.pages;
+            for (var p in pages) {
+                for (var l of pages[p].links) {
+                    console.log(l.title);
+                }
+            }
+        })
+        .catch(function(error){console.log(error);});
+  };
+
   const fetchWikipediaContent = async (title, setContent) => {
     const url = `https://en.wikipedia.org/w/api.php?action=parse&format=json&page=${title}&prop=text&origin=*`
     try {
       const response = await fetch(url)
       const data = await response.json()
       setContent(data.parse.text['*'])
+      console.log(getLinks(title))
     } catch (error) {
       console.error('Error fetching Wikipedia content:', error)
     }
@@ -121,6 +148,7 @@ export function WikipediaGameComponent() {
     if (leftTitle) fetchWikipediaContent(leftTitle, setLeftContent)
     if (rightTitle) fetchWikipediaContent(rightTitle, setRightContent)
   }, [leftTitle, rightTitle])
+
 
   const handleLeftLinkClick = (newTitle) => {
     setLeftTitle(newTitle)
