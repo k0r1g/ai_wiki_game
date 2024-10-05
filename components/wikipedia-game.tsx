@@ -314,8 +314,17 @@ export function WikipediaGameComponent() {
       </div>
       <div className="flex-grow flex overflow-hidden">
         <div className="w-1/2 flex flex-col">
-          <div className="bg-[#FFDEAD] p-4 text-black font-bold text-xl sticky top-0 z-10 flex justify-center items-center">
-            🤖 Pixtral 12B
+          <div className="bg-[#FFDEAD] p-4 text-black font-bold text-xl sticky top-0 z-10">
+            <div className="flex justify-center items-center mb-2">
+              🤖 Pixtral 12B
+            </div>
+            <div className="flex items-center text-sm">
+              <span className="mr-2">🥶</span>
+              <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '50%' }}></div>
+              </div>
+              <span className="ml-2">🥵</span>
+            </div>
           </div>
           <div className="overflow-auto flex-grow">
             <div className="p-4">
@@ -342,9 +351,18 @@ export function WikipediaGameComponent() {
             </div>
           </div>
         </div>
-        <div className="w-1/2 flex flex-col border-l border-gray-300"> {/* Added border-l and border-gray-300 classes here */}
-          <div className="bg-[#E6E6F9] p-4 text-black font-bold text-xl sticky top-0 z-10 flex justify-center items-center">
-            🧠 Human
+        <div className="w-1/2 flex flex-col border-l border-gray-300">
+          <div className="bg-[#CCCCFF] p-4 text-black font-bold text-xl sticky top-0 z-10">
+            <div className="flex justify-center items-center mb-2">
+              🧠 Human
+            </div>
+            <div className="flex items-center text-sm">
+              <span className="mr-2">🥶</span>
+              <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '50%' }}></div>
+              </div>
+              <span className="ml-2">🥵</span>
+            </div>
           </div>
           <div className="overflow-auto flex-grow">
             <div className="p-4">
@@ -352,8 +370,8 @@ export function WikipediaGameComponent() {
               <WikiContent html={rightContent} onLinkClick={handleRightLinkClick} />
             </div>
           </div>
-          <div className="bg-[#f2f2f9] p-4 text-gray-700 font-semibold text-sm sticky bottom-0 z-10 overflow-y-auto h-40 flex-shrink-0">
-            <p className="mb-2 text-base">📓 Click History:</p>
+          <div className="bg-[#E6E6F8] p-4 text-gray-700 font-semibold text-sm sticky bottom-0 z-10 overflow-y-auto h-40 flex-shrink-0">
+            <p className="mb-2 text-base">Click History:</p>
             <div className="space-y-2 overflow-y-auto max-h-36">
               {rightClickHistory.map((title, index) => (
                 <input
