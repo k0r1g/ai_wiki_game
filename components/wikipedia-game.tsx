@@ -1,9 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Button } from "@/components/ui/button"
 import { Timer } from './Timer'
 import { ArrowRight } from 'lucide-react'
+import { suggestLink } from '../mistral/model';
+import { Mistral } from '@mistralai/mistralai';
 
 // WikiContent component to render Wikipedia content with clickable blue links
 const WikiContent = ({ html, onLinkClick }) => {
@@ -101,47 +103,57 @@ export function WikipediaGameComponent() {
   // };
 
   const getLinks = async (title) => {
-    const url = "https://en.wikipedia.org/w/api.php";
+    const url = "https://en.wikipedia.org/w/api.php"
     const params = {
       action: "query",
       format: "json",
       titles: title,
       prop: "links",
-      pllimit: "max" // This ensures we get all links, up to 500
-    };
+      pllimit: "max"
+    }
   
     const queryString = Object.keys(params)
       .map(key => `${key}=${encodeURIComponent(params[key])}`)
-      .join('&');
+      .join('&')
   
-    const fullUrl = `${url}?origin=*&${queryString}`;
+    const fullUrl = `${url}?origin=*&${queryString}`
   
     try {
-      const response = await fetch(fullUrl);
-      const data = await response.json();
-      const pages = data.query.pages;
-      const links = [];
+      const response = await fetch(fullUrl)
+      const data = await response.json()
+      const pages = data.query.pages
+      const links = []
   
       for (const pageId in pages) {
         if (pages[pageId].links) {
-          links.push(...pages[pageId].links.map(link => link.title));
+          links.push(...pages[pageId].links.map(link => link.title))
         }
       }
-      console.log(links)
-      return links;
+      return links
     } catch (error) {
-      console.error('Error fetching links:', error);
-      return [];
+      console.error('Error fetching links:', error)
+      return []
     }
-  };
+  }
 
-  const fetchWikipediaContent = async (title, setContent) => {
+  const fetchWikipediaContentLeft = async (title, setContent) => {
     const url = `https://en.wikipedia.org/w/api.php?action=parse&format=json&page=${title}&prop=text&origin=*`
     try {
       const response = await fetch(url)
       const data = await response.json()
       setContent(data.parse.text['*'])
-      console.log(getLinks(title))
+      // console.log(getLinks(title))
+    } catch (error) {
+      console.error('Error fetching Wikipedia content:', error)
+    }
+  }
+
+  const fetchWikipediaContentRight = async (title, setContent) => {
+    const url = `https://en.wikipedia.org/w/api.php?action=parse&format=json&page=${title}&prop=text&origin=*`
+    try {
+      const response = await fetch(url)
+      const data = await response.json()
+      setContent(data.parse.text['*'])
     } catch (error) {
       console.error('Error fetching Wikipedia content:', error)
     }
@@ -181,16 +193,57 @@ export function WikipediaGameComponent() {
   // //End of Temp Code
 
   useEffect(() => {
-    if (leftTitle) fetchWikipediaContent(leftTitle, setLeftContent)
-    if (rightTitle) fetchWikipediaContent(rightTitle, setRightContent)
+    if (leftTitle) fetchWikipediaContentLeft(leftTitle, setLeftContent)
+    if (rightTitle) fetchWikipediaContentRight(rightTitle, setRightContent)
   }, [leftTitle, rightTitle])
 
 
-  const handleLeftLinkClick = (newTitle) => {
-    setLeftTitle(newTitle)
-    setLeftClickHistory(prev => [...prev, newTitle])
-    checkWinner('Pixtral 12B', newTitle)
-  }
+  // const handleLeftLinkClick = (newTitle) => {
+  //   setLeftTitle(newTitle)
+  //   setLeftClickHistory(prev => [...prev, newTitle])
+  //   checkWinner('Pixtral 12B', newTitle)
+  // }
+
+  const makeAIMove = useCallback(async () => {
+    if (isGameOver || !isTimerRunning) return;
+
+    setAiThinking(true);
+    try {
+        const links = await getLinks(leftTitle);
+        const suggestion = await suggestLink({
+            current_link: leftTitle,
+            target: randomPageTitle2,
+            links: links
+        });
+        
+        if (suggestion && suggestion.link) {
+            console.log(`AI suggests: ${suggestion.link}`);
+            console.log(`Relevance: ${suggestion.relevance}`);
+            setAiPath(prev => [...prev, { link: suggestion.link, relevance: suggestion.relevance }]);
+            setLeftTitle(suggestion.link);
+            setLeftClickHistory(prev => [...prev, suggestion.link]);
+            checkWinner('Pixtral 12B', suggestion.link);
+        } else {
+            console.error('Invalid suggestion from AI:', suggestion);
+            // Handle the case where the AI doesn't provide a valid suggestion
+            // You might want to skip the AI's turn or use a fallback strategy
+        }
+    } catch (error) {
+        console.error('Error in AI move:', error);
+        // Handle the error - maybe skip the AI's turn or use a fallback strategy
+    } finally {
+        setAiThinking(false);
+    }
+}, [leftTitle, randomPageTitle2, isGameOver, isTimerRunning, getLinks]);
+
+  useEffect(() => {
+    if (!aiThinking && !isGameOver && isTimerRunning) {
+      const timer = setTimeout(() => {
+        makeAIMove()
+      }, 1000) // Add a 1-second delay between moves
+      return () => clearTimeout(timer)
+    }
+  }, [aiThinking, isGameOver, isTimerRunning, makeAIMove])
 
   const handleRightLinkClick = (newTitle) => {
     setRightTitle(newTitle)
@@ -267,20 +320,24 @@ export function WikipediaGameComponent() {
           <div className="overflow-auto flex-grow">
             <div className="p-4">
               <h2 className="text-xl font-semibold mb-4">{leftTitle}</h2>
-              <WikiContent html={leftContent} onLinkClick={handleLeftLinkClick} />
-            </div>
+              <WikiContent html={leftContent} onLinkClick={() => {}} /> {/* Disable click handler */}
+              </div>
           </div>
           <div className="bg-[#fcedd9] p-4 text-gray-700 font-semibold text-sm sticky bottom-0 z-10 overflow-y-auto h-20 flex-shrink-0">
             <p className="mb-2 text-base">Click History:</p>
             <div className="space-y-2 overflow-y-auto max-h-36">
               {leftClickHistory.map((title, index) => (
-                <input
-                  key={index}
-                  type="text"
-                  value={title}
-                  readOnly
-                  className="w-full bg-gray-200 p-2 rounded text-sm"
-                />
+                <div key={index} className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    value={title}
+                    readOnly
+                    className="w-full bg-gray-200 p-2 rounded text-sm"
+                  />
+                  {aiPath[index] && (
+                    <span className="text-xs text-gray-500">{aiPath[index].relevance}</span>
+                  )}
+                </div>
               ))}
             </div>
           </div>
