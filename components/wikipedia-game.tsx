@@ -206,7 +206,7 @@ export function WikipediaGameComponent() {
 
   const makeAIMove = useCallback(async () => {
     if (isGameOver || !isTimerRunning) return;
-
+    
     setAiThinking(true);
     try {
         const links = await getLinks(leftTitle);
