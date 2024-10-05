@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Timer } from './Timer'
+import { ArrowRight } from 'lucide-react'
 
 // WikiContent component to render Wikipedia content with clickable blue links
 const WikiContent = ({ html, onLinkClick }) => {
@@ -28,25 +29,29 @@ const WikiContent = ({ html, onLinkClick }) => {
 export function WikipediaGameComponent() {
   const [leftContent, setLeftContent] = useState('')
   const [rightContent, setRightContent] = useState('')
-  const [leftTitle, setLeftTitle] = useState('Jesus')
-  const [rightTitle, setRightTitle] = useState('Jesus')
+  const [leftTitle, setLeftTitle] = useState('')
+  const [rightTitle, setRightTitle] = useState('')
   const [isGameOver, setIsGameOver] = useState(false)
   const [winner, setWinner] = useState<string | null>(null)
   const [resetTrigger, setResetTrigger] = useState(0)
   const [isTimerRunning, setIsTimerRunning] = useState(true)
   const [leftClickHistory, setLeftClickHistory] = useState<string[]>([])
-  const [rightClickHistory, setRightClickHistory] = useState<string[]>([]) // New state for right click history
-  const [randomPageTitle, setRandomPageTitle] = useState('')
+  const [rightClickHistory, setRightClickHistory] = useState<string[]>([])
+  const [randomPageTitle1, setRandomPageTitle1] = useState('')
+  const [randomPageTitle2, setRandomPageTitle2] = useState('')
 
-  const fetchRandomWikipediaPage = async () => {
-    const url = 'https://en.wikipedia.org/w/api.php?action=query&list=random&format=json&rnnamespace=0&rnlimit=1&origin=*'
+  const fetchRandomWikipediaPages = async () => {
+    const url = 'https://en.wikipedia.org/w/api.php?action=query&list=random&format=json&rnnamespace=0&rnlimit=2&origin=*'
     try {
       const response = await fetch(url)
       const data = await response.json()
-      const randomTitle = data.query.random[0].title
-      setRandomPageTitle(randomTitle)
+      const [randomTitle1, randomTitle2] = data.query.random.map(page => page.title)
+      setRandomPageTitle1(randomTitle1)
+      setRandomPageTitle2(randomTitle2)
+      setLeftTitle(randomTitle1)
+      setRightTitle(randomTitle1)
     } catch (error) {
-      console.error('Error fetching random Wikipedia page:', error)
+      console.error('Error fetching random Wikipedia pages:', error)
     }
   }
 
@@ -62,46 +67,71 @@ export function WikipediaGameComponent() {
   }
 
   useEffect(() => {
-    fetchRandomWikipediaPage()
-    fetchWikipediaContent(leftTitle, setLeftContent)
-    fetchWikipediaContent(rightTitle, setRightContent)
-  }, [])
+    //   fetchRandomWikipediaPages()
+    // }, [])
+
+    //Start of temp code
+    const fetchRandomPages = async () => {
+      try {
+        // Temporarily set fixed titles instead of fetching random ones
+        const title1 = 'Jesus';
+        const title2 = 'God_in_Christianity';
+
+        setRandomPageTitle1(title1);
+        setRandomPageTitle2(title2);
+
+        // Set initial pages for both players
+        setLeftTitle(title1);
+        setRightTitle(title1);
+
+        // Fetch content for both pages
+        const content1 = await fetchWikipediaContent(title1);
+        const content2 = await fetchWikipediaContent(title2);
+
+        setLeftContent(content1);
+        setRightContent(content1);
+      } catch (error) {
+        console.error('Error fetching random pages:', error);
+      }
+    };
+
+    fetchRandomPages();
+  }, []);
+  //End of Temp Code
 
   useEffect(() => {
-    fetchWikipediaContent(leftTitle, setLeftContent)
-    fetchWikipediaContent(rightTitle, setRightContent)
+    if (leftTitle) fetchWikipediaContent(leftTitle, setLeftContent)
+    if (rightTitle) fetchWikipediaContent(rightTitle, setRightContent)
   }, [leftTitle, rightTitle])
 
   const handleLeftLinkClick = (newTitle) => {
     setLeftTitle(newTitle)
     setLeftClickHistory(prev => [...prev, newTitle])
-    checkWinner('Player 1', newTitle)
+    checkWinner('Pixtral 12B', newTitle)
   }
 
   const handleRightLinkClick = (newTitle) => {
     setRightTitle(newTitle)
-    setRightClickHistory(prev => [...prev, newTitle]) // Update right click history
-    checkWinner('Player 2', newTitle)
+    setRightClickHistory(prev => [...prev, newTitle])
+    checkWinner('Human', newTitle)
   }
 
   const checkWinner = (player: string, title: string) => {
-    if (title.toLowerCase() === 'philosophy') {
+    if (title.toLowerCase() === 'philosophy' || title === randomPageTitle2) {
       setWinner(player)
       setIsGameOver(true)
     }
   }
 
   const handleReset = () => {
-    fetchRandomWikipediaPage()
-    setLeftTitle('Jesus')
-    setRightTitle('Jesus')
+    fetchRandomWikipediaPages()
     setIsGameOver(false)
     setWinner(null)
     setLeftContent('')
     setRightContent('')
     setIsTimerRunning(false)
-    setLeftClickHistory([]) // Reset the left click history
-    setRightClickHistory([]) // Reset the right click history
+    setLeftClickHistory([])
+    setRightClickHistory([])
     setTimeout(() => setIsTimerRunning(true), 0)
   }
 
@@ -117,14 +147,27 @@ export function WikipediaGameComponent() {
     <div className="flex flex-col h-screen">
       <div className="flex-none bg-primary p-4 flex justify-between items-center">
         <h1 className="text-2xl font-bold text-primary-foreground">Wikipedia Game</h1>
-        <a
-          href={`https://en.wikipedia.org/wiki/${encodeURIComponent(randomPageTitle)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xl font-semibold text-primary-foreground hover:underline"
-        >
-          {randomPageTitle}
-        </a>
+        <div className="flex items-center space-x-2">
+          <span className="text-xl">🚦</span>
+          <a
+            href={`https://en.wikipedia.org/wiki/${encodeURIComponent(randomPageTitle1)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xl font-semibold text-primary-foreground hover:underline"
+          >
+            {randomPageTitle1}
+          </a>
+          <ArrowRight className="text-primary-foreground" size={24} />
+          <span className="text-xl">🏁</span>
+          <a
+            href={`https://en.wikipedia.org/wiki/${encodeURIComponent(randomPageTitle2)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xl font-semibold text-primary-foreground hover:underline"
+          >
+            {randomPageTitle2}
+          </a>
+        </div>
         <div className="flex items-center">
           <Timer
             initialTime={180}
@@ -190,7 +233,13 @@ export function WikipediaGameComponent() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-8 rounded-lg text-center">
             <h2 className="text-2xl font-bold mb-4">Game Over!</h2>
-            <p className="text-xl mb-4">Winner is {winner}!</p>
+            <p className="text-xl mb-4">
+              {winner === 'No one'
+                ? 'Time\'s up! No winner.'
+                : `${winner} wins by reaching ${winner === 'Pixtral 12B' ? leftTitle : rightTitle
+                }!`
+              }
+            </p>
             <Button onClick={handleReset}>Play Again</Button>
           </div>
         </div>
