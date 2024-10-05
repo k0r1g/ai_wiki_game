@@ -1,25 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 interface TimerProps {
     initialTime: number; // in seconds
     onTimeUp: () => void;
+    isRunning: boolean;
 }
 
-export function Timer({ initialTime, onTimeUp }: TimerProps) {
+export function Timer({ initialTime, onTimeUp, isRunning }: TimerProps) {
     const [timeLeft, setTimeLeft] = useState(initialTime);
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
-        if (timeLeft <= 0) {
-            onTimeUp();
-            return;
+        if (isRunning) {
+            intervalRef.current = setInterval(() => {
+                setTimeLeft((prevTime) => {
+                    if (prevTime <= 1) {
+                        clearInterval(intervalRef.current!);
+                        onTimeUp();
+                        return 0;
+                    }
+                    return prevTime - 1;
+                });
+            }, 1000);
+        } else {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+            }
+            setTimeLeft(initialTime);
         }
 
-        const timerId = setTimeout(() => {
-            setTimeLeft(timeLeft - 1);
-        }, 1000);
-
-        return () => clearTimeout(timerId);
-    }, [timeLeft, onTimeUp]);
+        return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+            }
+        };
+    }, [isRunning, initialTime, onTimeUp]);
 
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
