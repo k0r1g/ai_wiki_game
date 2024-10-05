@@ -111,19 +111,19 @@ export function WikipediaGameComponent() {
       prop: "links",
       pllimit: "max"
     }
-  
+
     const queryString = Object.keys(params)
       .map(key => `${key}=${encodeURIComponent(params[key])}`)
       .join('&')
-  
+
     const fullUrl = `${url}?origin=*&${queryString}`
-  
+
     try {
       const response = await fetch(fullUrl)
       const data = await response.json()
       const pages = data.query.pages
       const links = []
-  
+
       for (const pageId in pages) {
         if (pages[pageId].links) {
           links.push(...pages[pageId].links.map(link => link.title))
@@ -209,32 +209,32 @@ export function WikipediaGameComponent() {
 
     setAiThinking(true);
     try {
-        const links = await getLinks(leftTitle);
-        const suggestion = await suggestLink({
-            current_link: leftTitle,
-            target: randomPageTitle2,
-            links: links
-        });
-        
-        if (suggestion && suggestion.link) {
-            console.log(`AI suggests: ${suggestion.link}`);
-            console.log(`Relevance: ${suggestion.relevance}`);
-            setAiPath(prev => [...prev, { link: suggestion.link, relevance: suggestion.relevance }]);
-            setLeftTitle(suggestion.link);
-            setLeftClickHistory(prev => [...prev, suggestion.link]);
-            checkWinner('Pixtral 12B', suggestion.link);
-        } else {
-            console.error('Invalid suggestion from AI:', suggestion);
-            // Handle the case where the AI doesn't provide a valid suggestion
-            // You might want to skip the AI's turn or use a fallback strategy
-        }
+      const links = await getLinks(leftTitle);
+      const suggestion = await suggestLink({
+        current_link: leftTitle,
+        target: randomPageTitle2,
+        links: links
+      });
+
+      if (suggestion && suggestion.link) {
+        console.log(`AI suggests: ${suggestion.link}`);
+        console.log(`Relevance: ${suggestion.relevance}`);
+        setAiPath(prev => [...prev, { link: suggestion.link, relevance: suggestion.relevance }]);
+        setLeftTitle(suggestion.link);
+        setLeftClickHistory(prev => [...prev, suggestion.link]);
+        checkWinner('Pixtral 12B', suggestion.link);
+      } else {
+        console.error('Invalid suggestion from AI:', suggestion);
+        // Handle the case where the AI doesn't provide a valid suggestion
+        // You might want to skip the AI's turn or use a fallback strategy
+      }
     } catch (error) {
-        console.error('Error in AI move:', error);
-        // Handle the error - maybe skip the AI's turn or use a fallback strategy
+      console.error('Error in AI move:', error);
+      // Handle the error - maybe skip the AI's turn or use a fallback strategy
     } finally {
-        setAiThinking(false);
+      setAiThinking(false);
     }
-}, [leftTitle, randomPageTitle2, isGameOver, isTimerRunning, getLinks]);
+  }, [leftTitle, randomPageTitle2, isGameOver, isTimerRunning, getLinks]);
 
   useEffect(() => {
     if (!aiThinking && !isGameOver && isTimerRunning) {
@@ -320,11 +320,11 @@ export function WikipediaGameComponent() {
           <div className="overflow-auto flex-grow">
             <div className="p-4">
               <h2 className="text-xl font-semibold mb-4">{leftTitle}</h2>
-              <WikiContent html={leftContent} onLinkClick={() => {}} /> {/* Disable click handler */}
-              </div>
+              <WikiContent html={leftContent} onLinkClick={() => { }} /> {/* Disable click handler */}
+            </div>
           </div>
-          <div className="bg-[#fcedd9] p-4 text-gray-700 font-semibold text-sm sticky bottom-0 z-10 overflow-y-auto h-20 flex-shrink-0">
-            <p className="mb-2 text-base">Click History:</p>
+          <div className="bg-[#fcedd9] p-4 text-gray-700 font-semibold text-sm sticky bottom-0 z-10 overflow-y-auto h-40 flex-shrink-0">
+            <p className="mb-2 text-base">📓 Click History:</p>
             <div className="space-y-2 overflow-y-auto max-h-36">
               {leftClickHistory.map((title, index) => (
                 <div key={index} className="flex items-center space-x-2">
@@ -352,8 +352,8 @@ export function WikipediaGameComponent() {
               <WikiContent html={rightContent} onLinkClick={handleRightLinkClick} />
             </div>
           </div>
-          <div className="bg-[#f2f2f9] p-4 text-gray-700 font-semibold text-sm sticky bottom-0 z-10 overflow-y-auto h-20 flex-shrink-0">
-            <p className="mb-2 text-base">Click History:</p>
+          <div className="bg-[#f2f2f9] p-4 text-gray-700 font-semibold text-sm sticky bottom-0 z-10 overflow-y-auto h-40 flex-shrink-0">
+            <p className="mb-2 text-base">📓 Click History:</p>
             <div className="space-y-2 overflow-y-auto max-h-36">
               {rightClickHistory.map((title, index) => (
                 <input
