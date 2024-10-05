@@ -252,7 +252,7 @@ export function WikipediaGameComponent() {
   }
 
   const checkWinner = (player: string, title: string) => {
-    if (!isGameOver &&  (title.toLowerCase() === 'philosophy' || title === randomPageTitle2)) {
+    if (!isGameOver && (title.toLowerCase() === 'philosophy' || title === randomPageTitle2)) {
       setWinner(player)
       setIsGameOver(true)
     }
@@ -332,8 +332,8 @@ export function WikipediaGameComponent() {
               <WikiContent html={leftContent} onLinkClick={() => { }} /> {/* Disable click handler */}
             </div>
           </div>
-          <div className="bg-[#fcedd9] p-4 text-gray-700 font-semibold text-sm sticky bottom-0 z-10 overflow-y-auto h-40 flex-shrink-0">
-            <p className="mb-2 text-base">📓 Click History:</p>
+          <div className="bg-[#fcedd9] p-4 text-black font-semibold text-sm sticky bottom-0 z-10 overflow-y-auto h-40 flex-shrink-0">
+            <p className="mb-2 text-base">📓📓 Click History:</p>
             <div className="space-y-2 overflow-y-auto max-h-36">
               {leftClickHistory.map((title, index) => (
                 <div key={index} className="flex items-center space-x-2">
@@ -341,7 +341,7 @@ export function WikipediaGameComponent() {
                     type="text"
                     value={title}
                     readOnly
-                    className="w-full bg-gray-200 p-2 rounded text-sm"
+                    className="w-40 bg-gray-200 p-2 rounded text-sm"
                   />
                   {aiPath[index] && (
                     <span className="text-xs text-gray-500">{aiPath[index].relevance}</span>
@@ -370,8 +370,8 @@ export function WikipediaGameComponent() {
               <WikiContent html={rightContent} onLinkClick={handleRightLinkClick} />
             </div>
           </div>
-          <div className="bg-[#E6E6F8] p-4 text-gray-700 font-semibold text-sm sticky bottom-0 z-10 overflow-y-auto h-40 flex-shrink-0">
-            <p className="mb-2 text-base">Click History:</p>
+          <div className="bg-[#E6E6F8] p-4 text-black font-semibold text-sm sticky bottom-0 z-10 overflow-y-auto h-40 flex-shrink-0">
+            <p className="mb-2 text-base">📓 Click History:</p>
             <div className="space-y-2 overflow-y-auto max-h-36">
               {rightClickHistory.map((title, index) => (
                 <input
