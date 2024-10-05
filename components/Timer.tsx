@@ -40,7 +40,7 @@ export function Timer({ initialTime, onTimeUp, isRunning }: TimerProps) {
     const seconds = timeLeft % 60;
 
     return (
-        <div className="text-xl font-bold text-white">
+        <div className="text-xl font-bold text-black">
             ⏱️ Time: {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
         </div>
     );

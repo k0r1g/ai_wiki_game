@@ -85,37 +85,37 @@ export function WikipediaGameComponent() {
   }
 
   useEffect(() => {
-    //   fetchRandomWikipediaPages()
-    // }, [])
+    fetchRandomWikipediaPages()
+  }, [])
 
-    //Start of temp code
-    const fetchRandomPages = async () => {
-      try {
-        // Temporarily set fixed titles instead of fetching random ones
-        const title1 = 'Single-molecule experiment';
-        const title2 = 'Fluorescence';
+  //   //Start of temp code
+  //   const fetchRandomPages = async () => {
+  //     try {
+  //       // Temporarily set fixed titles instead of fetching random ones
+  //       const title1 = 'Single-molecule experiment';
+  //       const title2 = 'Fluorescence';
 
-        setRandomPageTitle1(title1);
-        setRandomPageTitle2(title2);
+  //       setRandomPageTitle1(title1);
+  //       setRandomPageTitle2(title2);
 
-        // Set initial pages for both players
-        setLeftTitle(title1);
-        setRightTitle(title1);
+  //       // Set initial pages for both players
+  //       setLeftTitle(title1);
+  //       setRightTitle(title1);
 
-        // Fetch content for both pages
-        const content1 = await fetchWikipediaContent(title1);
-        const content2 = await fetchWikipediaContent(title2);
+  //       // Fetch content for both pages
+  //       const content1 = await fetchWikipediaContent(title1);
+  //       const content2 = await fetchWikipediaContent(title2);
 
-        setLeftContent(content1);
-        setRightContent(content1);
-      } catch (error) {
-        console.error('Error fetching random pages:', error);
-      }
-    };
+  //       setLeftContent(content1);
+  //       setRightContent(content1);
+  //     } catch (error) {
+  //       console.error('Error fetching random pages:', error);
+  //     }
+  //   };
 
-    fetchRandomPages();
-  }, []);
-  //End of Temp Code
+  //   fetchRandomPages();
+  // }, []);
+  // //End of Temp Code
 
   useEffect(() => {
     if (leftTitle) fetchWikipediaContent(leftTitle, setLeftContent)
@@ -163,25 +163,25 @@ export function WikipediaGameComponent() {
 
   return (
     <div className="flex flex-col h-screen">
-      <div className="flex-none bg-primary p-4 flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-primary-foreground">Wikipedia Game</h1>
+      <div className="flex-none bg-[#F9F9F9] p-4 flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-black">AI WikiGame</h1>
         <div className="flex items-center space-x-2">
           <span className="text-xl">🚦</span>
           <a
             href={`https://en.wikipedia.org/wiki/${encodeURIComponent(randomPageTitle1)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xl font-semibold text-primary-foreground hover:underline"
+            className="text-xl font-semibold text-black hover:underline"
           >
             {randomPageTitle1}
           </a>
-          <ArrowRight className="text-primary-foreground" size={24} />
+          <ArrowRight className="text-black" size={24} />
           <span className="text-xl">🏁</span>
           <a
             href={`https://en.wikipedia.org/wiki/${encodeURIComponent(randomPageTitle2)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xl font-semibold text-primary-foreground hover:underline"
+            className="text-xl font-semibold text-black hover:underline"
           >
             {randomPageTitle2}
           </a>
@@ -197,8 +197,8 @@ export function WikipediaGameComponent() {
       </div>
       <div className="flex-grow flex overflow-hidden">
         <div className="w-1/2 flex flex-col">
-          <div className="bg-blue-500 p-4 text-white font-bold text-xl sticky top-0 z-10">
-            Pixtral 12B
+          <div className="bg-[#FFDEAD] p-4 text-black font-bold text-xl sticky top-0 z-10 flex justify-center items-center">
+            🤖 Pixtral 12B
           </div>
           <div className="overflow-auto flex-grow">
             <div className="p-4">
@@ -206,7 +206,7 @@ export function WikipediaGameComponent() {
               <WikiContent html={leftContent} onLinkClick={handleLeftLinkClick} />
             </div>
           </div>
-          <div className="bg-gray-300 p-4 text-gray-700 font-semibold text-sm sticky bottom-0 z-10 overflow-y-auto h-20 flex-shrink-0">
+          <div className="bg-[#fcedd9] p-4 text-gray-700 font-semibold text-sm sticky bottom-0 z-10 overflow-y-auto h-20 flex-shrink-0">
             <p className="mb-2 text-base">Click History:</p>
             <div className="space-y-2 overflow-y-auto max-h-36">
               {leftClickHistory.map((title, index) => (
@@ -222,8 +222,8 @@ export function WikipediaGameComponent() {
           </div>
         </div>
         <div className="w-1/2 flex flex-col border-l border-gray-300"> {/* Added border-l and border-gray-300 classes here */}
-          <div className="bg-red-500 p-4 text-white font-bold text-xl sticky top-0 z-10">
-            Human
+          <div className="bg-[#E6E6F9] p-4 text-black font-bold text-xl sticky top-0 z-10 flex justify-center items-center">
+            🧠 Human
           </div>
           <div className="overflow-auto flex-grow">
             <div className="p-4">
@@ -231,7 +231,7 @@ export function WikipediaGameComponent() {
               <WikiContent html={rightContent} onLinkClick={handleRightLinkClick} />
             </div>
           </div>
-          <div className="bg-gray-200 p-4 text-gray-700 font-semibold text-sm sticky bottom-0 z-10 overflow-y-auto h-20 flex-shrink-0">
+          <div className="bg-[#f2f2f9] p-4 text-gray-700 font-semibold text-sm sticky bottom-0 z-10 overflow-y-auto h-20 flex-shrink-0">
             <p className="mb-2 text-base">Click History:</p>
             <div className="space-y-2 overflow-y-auto max-h-36">
               {rightClickHistory.map((title, index) => (

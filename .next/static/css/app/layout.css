@@ -680,16 +680,20 @@ video {
 .border-input {
   border-color: hsl(var(--input));
 }
+.bg-\[\#F2EBD5\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(242 235 213 / var(--tw-bg-opacity));
+}
+.bg-\[\#F5FAFE\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(245 250 254 / var(--tw-bg-opacity));
+}
 .bg-background {
   background-color: hsl(var(--background));
 }
 .bg-black {
   --tw-bg-opacity: 1;
   background-color: rgb(0 0 0 / var(--tw-bg-opacity));
-}
-.bg-blue-500 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(59 130 246 / var(--tw-bg-opacity));
 }
 .bg-destructive {
   background-color: hsl(var(--destructive));
@@ -709,16 +713,59 @@ video {
 .bg-primary {
   background-color: hsl(var(--primary));
 }
-.bg-red-500 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(239 68 68 / var(--tw-bg-opacity));
-}
 .bg-secondary {
   background-color: hsl(var(--secondary));
 }
 .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+.bg-\[\#FF7000\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 112 0 / var(--tw-bg-opacity));
+}
+.bg-\[\#ff9544\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 149 68 / var(--tw-bg-opacity));
+}
+.bg-\[\#\#05E9EF\] {
+  background-color: ##05E9EF;
+}
+.bg-\[\#05E9EF\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(5 233 239 / var(--tw-bg-opacity));
+}
+.bg-\[\#00CED1\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(0 206 209 / var(--tw-bg-opacity));
+}
+.bg-\[\#1E90FF\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(30 144 255 / var(--tw-bg-opacity));
+}
+.bg-\[\#E6E6F9\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(230 230 249 / var(--tw-bg-opacity));
+}
+.bg-\[\#724828\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(114 72 40 / var(--tw-bg-opacity));
+}
+.bg-\[\#F9F9F9\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(249 249 249 / var(--tw-bg-opacity));
+}
+.bg-\[\#FFDEAD\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 222 173 / var(--tw-bg-opacity));
+}
+.bg-\[\#fcedd9\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(252 237 217 / var(--tw-bg-opacity));
+}
+.bg-\[\#f2f2f9\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(242 242 249 / var(--tw-bg-opacity));
 }
 .bg-opacity-50 {
   --tw-bg-opacity: 0.5;
@@ -795,6 +842,10 @@ video {
 .text-white {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+.text-black {
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity));
 }
 .underline {
   text-decoration-line: underline;
