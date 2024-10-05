@@ -252,7 +252,7 @@ export function WikipediaGameComponent() {
   }
 
   const checkWinner = (player: string, title: string) => {
-    if (title.toLowerCase() === 'philosophy' || title === randomPageTitle2) {
+    if (!isGameOver &&  (title.toLowerCase() === 'philosophy' || title === randomPageTitle2)) {
       setWinner(player)
       setIsGameOver(true)
     }
