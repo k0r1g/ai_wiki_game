@@ -75,28 +75,64 @@ export function WikipediaGameComponent() {
     }
   }
 
+  // const getLinks = async (title) => {
+  //   var url = "https://en.wikipedia.org/w/api.php"; 
+  //   var params = {
+  //       action: "query",
+  //       format: "json",
+  //       titles: title,
+  //       prop: "links"
+  //   };
+  //   url = url + "?origin=*";
+  //   Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
+  //   console.log(url)
+  //   fetch(url)
+  //       .then(function(response){return response.json();})
+  //       .then(function(response) {
+  //           var pages = response.query.pages;
+  //           for (var p in pages) {
+  //               for (var l of pages[p].links) {
+  //                   console.log(l)
+  //                   console.log(l.title);
+  //               }
+  //           }
+  //       })
+  //       .catch(function(error){console.log(error);});
+  // };
+
   const getLinks = async (title) => {
-    var url = "https://en.wikipedia.org/w/api.php"; 
-    var params = {
-        action: "query",
-        format: "json",
-        titles: title,
-        prop: "links"
+    const url = "https://en.wikipedia.org/w/api.php";
+    const params = {
+      action: "query",
+      format: "json",
+      titles: title,
+      prop: "links",
+      pllimit: "max" // This ensures we get all links, up to 500
     };
-    url = url + "?origin=*";
-    Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
-    console.log(url)
-    fetch(url)
-        .then(function(response){return response.json();})
-        .then(function(response) {
-            var pages = response.query.pages;
-            for (var p in pages) {
-                for (var l of pages[p].links) {
-                    console.log(l.title);
-                }
-            }
-        })
-        .catch(function(error){console.log(error);});
+  
+    const queryString = Object.keys(params)
+      .map(key => `${key}=${encodeURIComponent(params[key])}`)
+      .join('&');
+  
+    const fullUrl = `${url}?origin=*&${queryString}`;
+  
+    try {
+      const response = await fetch(fullUrl);
+      const data = await response.json();
+      const pages = data.query.pages;
+      const links = [];
+  
+      for (const pageId in pages) {
+        if (pages[pageId].links) {
+          links.push(...pages[pageId].links.map(link => link.title));
+        }
+      }
+      console.log(links)
+      return links;
+    } catch (error) {
+      console.error('Error fetching links:', error);
+      return [];
+    }
   };
 
   const fetchWikipediaContent = async (title, setContent) => {
