@@ -41,7 +41,7 @@ export function Timer({ initialTime, onTimeUp, isRunning }: TimerProps) {
 
     return (
         <div className="text-xl font-bold text-white">
-            Time Left: {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
+            ⏱️ Time: {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
         </div>
     );
 }

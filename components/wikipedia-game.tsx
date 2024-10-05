@@ -41,17 +41,35 @@ export function WikipediaGameComponent() {
   const [randomPageTitle2, setRandomPageTitle2] = useState('')
 
   const fetchRandomWikipediaPages = async () => {
-    const url = 'https://en.wikipedia.org/w/api.php?action=query&list=random&format=json&rnnamespace=0&rnlimit=2&origin=*'
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const dateString = yesterday.toISOString().split('T')[0].replace(/-/g, '/');
+
+    const url = `https://wikimedia.org/api/rest_v1/metrics/pageviews/top/en.wikipedia/all-access/${dateString}`;
+
     try {
-      const response = await fetch(url)
-      const data = await response.json()
-      const [randomTitle1, randomTitle2] = data.query.random.map(page => page.title)
-      setRandomPageTitle1(randomTitle1)
-      setRandomPageTitle2(randomTitle2)
-      setLeftTitle(randomTitle1)
-      setRightTitle(randomTitle1)
+      const response = await fetch(url);
+      const data = await response.json();
+      const popularPages = data.items[0].articles
+        .filter(article => !article.article.startsWith('Special:') && !article.article.startsWith('File:'))
+        .map(article => article.article);
+
+      const randomIndex1 = Math.floor(Math.random() * Math.min(50, popularPages.length));
+      let randomIndex2 = Math.floor(Math.random() * Math.min(50, popularPages.length));
+      while (randomIndex2 === randomIndex1) {
+        randomIndex2 = Math.floor(Math.random() * Math.min(50, popularPages.length));
+      }
+
+      const randomTitle1 = popularPages[randomIndex1];
+      const randomTitle2 = popularPages[randomIndex2];
+
+      setRandomPageTitle1(randomTitle1);
+      setRandomPageTitle2(randomTitle2);
+      setLeftTitle(randomTitle1);
+      setRightTitle(randomTitle1);
     } catch (error) {
-      console.error('Error fetching random Wikipedia pages:', error)
+      console.error('Error fetching popular Wikipedia pages:', error);
     }
   }
 
@@ -74,8 +92,8 @@ export function WikipediaGameComponent() {
     const fetchRandomPages = async () => {
       try {
         // Temporarily set fixed titles instead of fetching random ones
-        const title1 = 'Jesus';
-        const title2 = 'God_in_Christianity';
+        const title1 = 'Single-molecule experiment';
+        const title2 = 'Fluorescence';
 
         setRandomPageTitle1(title1);
         setRandomPageTitle2(title2);
