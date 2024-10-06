@@ -11,22 +11,47 @@ console.log(apiKey)
 const client = new Mistral({ apiKey: apiKey });
 
 export async function suggestLink(message) {
-    const { current_link, target, links } = message;
+    const { current_link, target, links, visited_links } = message;
+    let available_links = links.filter(link => !visited_links.includes(link));
+
+    // If all links have been visited, allow revisiting
+    if (available_links.length === 0) {
+        available_links = links;
+        console.log('All links have been visited. Allowing revisits.');
+    }
+
+    console.log("visitied", visited_links)
+    console.log("available",available_links)
+
+    // const prompt = `You are playing WikiGame in which you have to click on Wikipedia links to get from "${current_link}" to "${target}".
+    //     From the following list of links available on the current page, suggest a single link to click on that will most likely 
+    //     lead to further links that will eventually lead to the target.
+
+    //     Return the answer in short JSON format with the key "link" for the suggested link to click,
+    //     and add some relevance as to how the next link is related to the current link "${current_link}" with the key "relevance".
+
+    //     Available links:
+    //     ${JSON.stringify(available_links)}
+
+    //     Remember, your goal is to find a path that will eventually lead to "${target}". Think strategically about which link
+    //     might bring you closer to that goal.
+
+    //     IMPORTANT: Respond ONLY with the JSON object, no additional text or formatting.`;
 
     const prompt = `You are playing WikiGame in which you have to click on Wikipedia links to get from "${current_link}" to "${target}".
-        From the following list of links available on the current page, suggest a single link to click on that will most likely 
-        lead to further links that will eventually lead to the target.
+    From the following list of links available on the current page, suggest a single link to click on that will most likely 
+    lead to further links that will eventually lead to the target.
 
-        Return the answer in short JSON format with the key "link" for the suggested link to click,
-        and add some relevance as to how the next link is related to the current link "${current_link}" with the key "relevance".
+    Return the answer in short JSON format with the key "link" for the suggested link to click,
+    and add some relevance as to how the next link is related to the current link "${current_link}" with the key "relevance".
 
-        Available links:
-        ${JSON.stringify(links)}
+    Available links:
+    ${JSON.stringify(available_links)}
 
-        Remember, your goal is to find a path that will eventually lead to "${target}". Think strategically about which link
-        might bring you closer to that goal.
+    Remember, your goal is to find a path that will eventually lead to "${target}". Think strategically about which link
+    might bring you closer to that goal, without revisiting any previous links.
 
-        IMPORTANT: Respond ONLY with the JSON object, no additional text or formatting.`;
+    IMPORTANT: Respond in short JSON format, no additional text or formatting. If there are no available unvisited links, return {"link": null, "relevance": "No unvisited links available"}.`;
 
     try {
         const chatResponse = await client.chat.complete({
