@@ -230,7 +230,7 @@ export function WikipediaGameComponent() {
 
   const makeAIMove = useCallback(async () => {
     if (isGameOver || !isTimerRunning) return;
-  
+
     setAiThinking(true);
     try {
       const links = await getLinks(leftTitle);
@@ -240,7 +240,7 @@ export function WikipediaGameComponent() {
         links: links,
         visited_links: leftClickHistory
       });
-  
+
       if (suggestion && suggestion.link) {
         await logMove('Pixtral', suggestion.link); // Add 'await' here
         console.log(`Relevance: ${suggestion.relevance}`);
@@ -354,7 +354,7 @@ export function WikipediaGameComponent() {
             onTimeUp={handleTimeUp}
             isRunning={isTimerRunning}
           />
-          <Button onClick={handleReset} className="ml-4">Reset Game</Button>
+          {/* <Button onClick={handleReset} className="ml-4">Reset Game</Button> */}
         </div>
       </div>
       <div className="flex-grow flex overflow-hidden">

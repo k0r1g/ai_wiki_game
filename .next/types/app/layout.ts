@@ -1,4 +1,4 @@
-// File: /Users/rasched/Desktop/ai_wiki_game/app/layout.tsx
+// File: /Users/korirogers/ai_wiki_game/app/layout.tsx
 import * as entry from '../../../app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
