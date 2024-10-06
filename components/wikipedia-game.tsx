@@ -218,7 +218,8 @@ export function WikipediaGameComponent() {
       const suggestion = await suggestLink({
         current_link: leftTitle,
         target: TargetWikiPage,
-        links: links
+        links: links,
+        visited_links: leftClickHistory
       });
 
       if (suggestion && suggestion.link) {
@@ -239,16 +240,28 @@ export function WikipediaGameComponent() {
     } finally {
       setAiThinking(false);
     }
-  }, [leftTitle, TargetWikiPage, isGameOver, isTimerRunning, getLinks]);
+  }, [leftTitle, TargetWikiPage, isGameOver, isTimerRunning, getLinks, leftClickHistory]);
+
+  // useEffect(() => {
+  //   if (!aiThinking && !isGameOver && isTimerRunning) {
+  //     const timer = setTimeout(() => {
+  //       makeAIMove()
+  //     }, 1000) // Add a 1-second delay between moves
+  //     return () => clearTimeout(timer)
+  //   }
+  // }, [aiThinking, isGameOver, isTimerRunning, makeAIMove])
 
   useEffect(() => {
     if (!aiThinking && !isGameOver && isTimerRunning) {
       const timer = setTimeout(() => {
-        makeAIMove()
-      }, 1000) // Add a 1-second delay between moves
-      return () => clearTimeout(timer)
+        // Only make a move if we're not on the start page or if it's the first move
+        if (leftTitle !== StartWikiPage || leftClickHistory.length === 0) {
+          makeAIMove();
+        }
+      }, 1000); // Add a 1-second delay between moves
+      return () => clearTimeout(timer);
     }
-  }, [aiThinking, isGameOver, isTimerRunning, makeAIMove])
+  }, [aiThinking, isGameOver, isTimerRunning, makeAIMove, leftTitle, StartWikiPage, leftClickHistory]);
 
   const handleRightLinkClick = (newTitle) => {
     setRightTitle(newTitle)
@@ -264,16 +277,24 @@ export function WikipediaGameComponent() {
   }
 
   const handleReset = () => {
-    fetchRandomWikipediaPages()
-    setIsGameOver(false)
-    setWinner(null)
-    setLeftContent('')
-    setRightContent('')
-    setIsTimerRunning(false)
-    setLeftClickHistory([])
-    setRightClickHistory([])
-    setTimeout(() => setIsTimerRunning(true), 0)
-  }
+    fetchRandomWikipediaPages();
+    setIsGameOver(false);
+    setWinner(null);
+    setLeftContent('');
+    setRightContent('');
+    setLeftTitle(''); // Clear the left title
+    setRightTitle(''); // Clear the right title
+    setLeftClickHistory([]);
+    setRightClickHistory([]);
+    setAiPath([]);
+    setAiThinking(false);
+    setIsTimerRunning(false);
+    
+    // Use setTimeout to ensure state updates have propagated before restarting the timer
+    setTimeout(() => {
+      setIsTimerRunning(true);
+    }, 100);
+  };
 
   const handleTimeUp = () => {
     setIsGameOver(true)
