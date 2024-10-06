@@ -230,7 +230,7 @@ export function WikipediaGameComponent() {
 
   const makeAIMove = useCallback(async () => {
     if (isGameOver || !isTimerRunning) return;
-
+  
     setAiThinking(true);
     try {
       const links = await getLinks(leftTitle);
@@ -240,22 +240,21 @@ export function WikipediaGameComponent() {
         links: links,
         visited_links: leftClickHistory
       });
-
+  
       if (suggestion && suggestion.link) {
         await logMove('Pixtral', suggestion.link); // Add 'await' here
         console.log(`Relevance: ${suggestion.relevance}`);
         setAiPath(prev => [...prev, { link: suggestion.link, relevance: suggestion.relevance }]);
         setLeftTitle(suggestion.link);
         setLeftClickHistory(prev => [...prev, suggestion.link]);
+        console.log("history", leftClickHistory)
         checkWinner('Pixtral 12B', suggestion.link);
       } else {
-        console.error('Invalid suggestion from AI:', suggestion);
-        // Handle the case where the AI doesn't provide a valid suggestion
-        // You might want to skip the AI's turn or use a fallback strategy
+        console.log('AI could not find a suitable link. Skipping turn.');
+        // You might want to implement a strategy for when the AI can't find a suitable link
       }
     } catch (error) {
       console.error('Error in AI move:', error);
-      // Handle the error - maybe skip the AI's turn or use a fallback strategy
     } finally {
       setAiThinking(false);
     }
