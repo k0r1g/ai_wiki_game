@@ -6,9 +6,9 @@ dotenv.config();
 const apiKey = process.env.NEXT_PUBLIC_MISTRAL_API_KEY;
 if (!apiKey) {
     console.error('NEXT_PUBLIC_MISTRAL_API_KEY is not set');
-  }
+}
 console.log(apiKey)
-const client = new Mistral({apiKey: apiKey});
+const client = new Mistral({ apiKey: apiKey });
 
 export async function suggestLink(message) {
     const { current_link, target, links } = message;
@@ -31,15 +31,15 @@ export async function suggestLink(message) {
     try {
         const chatResponse = await client.chat.complete({
             model: 'pixtral-12b-2409',
-            messages: [{role: 'user', content: prompt}],
+            messages: [{ role: 'user', content: prompt }],
             response_format: { type: "json_object" }
         });
 
         const content = chatResponse.choices[0].message.content;
-        
+
         // Remove any potential Markdown formatting
         const jsonString = content.replace(/```json\n?|\n?```/g, '').trim();
-        
+
         try {
             return JSON.parse(jsonString);
         } catch (parseError) {
@@ -49,6 +49,49 @@ export async function suggestLink(message) {
         }
     } catch (error) {
         console.error('Error in suggestLink:', error);
+        throw error;
+    }
+}
+
+export async function getSimilarityScore(newTitle, targetTitle) {
+    const prompt = `From 0 to 100 in increments of 5, where 0 is totally disconnected and 100 is a perfect match, how similar is "${newTitle}" to "${targetTitle}"? Only output the similarity score as a number.`;
+
+    try {
+        const chatResponse = await client.chat.complete({
+            model: 'pixtral-12b-2409',
+            messages: [{ role: 'user', content: prompt }],
+            response_format: { type: "json_object" }
+        });
+
+        const content = chatResponse.choices[0].message.content;
+        console.log("Raw AI response:", content); // Log the raw response
+
+        let score;
+
+        // Try parsing as JSON first
+        try {
+            const jsonResponse = JSON.parse(content);
+            score = jsonResponse.score || jsonResponse.similarity_score || Object.values(jsonResponse)[0];
+        } catch (jsonError) {
+            console.log("Failed to parse JSON, attempting to extract number from string");
+        }
+
+        // If JSON parsing failed or didn't yield a number, try to extract number from string
+        if (typeof score !== 'number' || isNaN(score)) {
+            const numberMatch = content.match(/\d+/);
+            if (numberMatch) {
+                score = parseInt(numberMatch[0]);
+            }
+        }
+
+        if (typeof score === 'number' && !isNaN(score)) {
+            return score;
+        } else {
+            console.error("Couldn't extract a valid score from the response:", content);
+            throw new Error(`Invalid response format. Raw response: ${content}`);
+        }
+    } catch (error) {
+        console.error('Error in getSimilarityScore:', error);
         throw error;
     }
 }

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { Button } from "@/components/ui/button"
 import { Timer } from './Timer'
 import { ArrowRight } from 'lucide-react'
-import { suggestLink } from '../mistral/model';
+import { suggestLink, getSimilarityScore } from '../mistral/model';
 import { Mistral } from '@mistralai/mistralai';
 
 // WikiContent component to render Wikipedia content with clickable blue links
@@ -43,11 +43,30 @@ export function WikipediaGameComponent() {
   const [TargetWikiPage, setTargetWikiPage] = useState('')
   const [aiThinking, setAiThinking] = useState(false)
   const [aiPath, setAiPath] = useState<string[]>([])
+  const [leftSimilarityScore, setLeftSimilarityScore] = useState(0);
+  const [rightSimilarityScore, setRightSimilarityScore] = useState(0);
 
 
   console.log('StartWikiPage', StartWikiPage)
   console.log('TargetWikiPage', TargetWikiPage)
 
+  const logMove = async (player: string, newTitle: string) => {
+    console.log(`YOOO ${player} has made a new move to: ${newTitle}`);
+
+    try {
+      const similarityScore = await getSimilarityScore(newTitle, TargetWikiPage);
+      console.log(`Similarity score: ${similarityScore}`);
+
+      if (player === 'Pixtral') {
+        setLeftSimilarityScore(similarityScore);
+      } else if (player === 'Human') {
+        setRightSimilarityScore(similarityScore);
+      }
+    } catch (error) {
+      console.error('Error getting similarity score:', error.message);
+      console.log(`Move logged without similarity score for ${player} to ${newTitle}`);
+    }
+  };
 
   const fetchRandomWikipediaPages = async () => {
     const today = new Date();
@@ -223,7 +242,7 @@ export function WikipediaGameComponent() {
       });
 
       if (suggestion && suggestion.link) {
-        console.log(`AI suggests: ${suggestion.link}`);
+        await logMove('Pixtral', suggestion.link); // Add 'await' here
         console.log(`Relevance: ${suggestion.relevance}`);
         setAiPath(prev => [...prev, { link: suggestion.link, relevance: suggestion.relevance }]);
         setLeftTitle(suggestion.link);
@@ -263,11 +282,12 @@ export function WikipediaGameComponent() {
     }
   }, [aiThinking, isGameOver, isTimerRunning, makeAIMove, leftTitle, StartWikiPage, leftClickHistory]);
 
-  const handleRightLinkClick = (newTitle) => {
-    setRightTitle(newTitle)
-    setRightClickHistory(prev => [...prev, newTitle])
-    checkWinner('Human', newTitle)
-  }
+  const handleRightLinkClick = async (newTitle) => { // Make this function async
+    await logMove('Human', newTitle); // Add 'await' here
+    setRightTitle(newTitle);
+    setRightClickHistory(prev => [...prev, newTitle]);
+    checkWinner('Human', newTitle);
+  };
 
   const checkWinner = (player: string, title: string) => {
     if (!isGameOver && (title.toLowerCase() === 'philosophy' || title === TargetWikiPage)) {
@@ -277,24 +297,24 @@ export function WikipediaGameComponent() {
   }
 
   const handleReset = () => {
-    fetchRandomWikipediaPages();
-    setIsGameOver(false);
-    setWinner(null);
-    setLeftContent('');
-    setRightContent('');
-    setLeftTitle(''); // Clear the left title
-    setRightTitle(''); // Clear the right title
-    setLeftClickHistory([]);
-    setRightClickHistory([]);
-    setAiPath([]);
+    fetchRandomWikipediaPages()
+    setIsGameOver(false)
+    setWinner(null)
+    setLeftContent('')
+    setRightContent('')
+    setIsTimerRunning(false)
+    setLeftClickHistory([])
+    setRightClickHistory([])
+    setLeftSimilarityScore(0);
+    setRightSimilarityScore(0);
     setAiThinking(false);
     setIsTimerRunning(false);
-    
+
     // Use setTimeout to ensure state updates have propagated before restarting the timer
     setTimeout(() => {
       setIsTimerRunning(true);
     }, 100);
-  };
+  }
 
   const handleTimeUp = () => {
     setIsGameOver(true)
@@ -344,12 +364,18 @@ export function WikipediaGameComponent() {
             <div className="flex justify-center items-center mb-2">
               🤖 Pixtral 12B
             </div>
-            <div className="flex items-center text-sm">
-              <span className="mr-2">🥶</span>
-              <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '50%' }}></div>
+            <div className="flex flex-col items-center text-sm">
+              <div className="flex items-center w-full">
+                <span className="mr-2">🥶</span>
+                <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                  <div
+                    className="bg-blue-600 h-2.5 rounded-full"
+                    style={{ width: `${leftSimilarityScore}%` }}
+                  ></div>
+                </div>
+                <span className="ml-2">🥵</span>
               </div>
-              <span className="ml-2">🥵</span>
+              <div className="mt-1">Similarity: {leftSimilarityScore}%</div>
             </div>
           </div>
           <div className="overflow-auto flex-grow">
@@ -382,12 +408,18 @@ export function WikipediaGameComponent() {
             <div className="flex justify-center items-center mb-2">
               🧠 Human
             </div>
-            <div className="flex items-center text-sm">
-              <span className="mr-2">🥶</span>
-              <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: '50%' }}></div>
+            <div className="flex flex-col items-center text-sm">
+              <div className="flex items-center w-full">
+                <span className="mr-2">🥶</span>
+                <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                  <div
+                    className="bg-blue-600 h-2.5 rounded-full"
+                    style={{ width: `${rightSimilarityScore}%` }}
+                  ></div>
+                </div>
+                <span className="ml-2">🥵</span>
               </div>
-              <span className="ml-2">🥵</span>
+              <div className="mt-1">Similarity: {rightSimilarityScore}%</div>
             </div>
           </div>
           <div className="overflow-auto flex-grow">
